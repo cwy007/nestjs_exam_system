@@ -4,6 +4,7 @@ import { RedisService } from '@app/redis';
 import { HttpException, HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { md5 } from './utils';
+import { LoginUserDto } from './dto/login-user.dto';
 
 @Injectable()
 export class UserService {
@@ -62,5 +63,24 @@ export class UserService {
 
   async findAll() {
     return this.prismaService.user.findMany();
+  }
+
+  async login(loginUserDto: LoginUserDto) {
+    const user = await this.prismaService.user.findUnique({
+      where: {
+        username: loginUserDto.username,
+      },
+    });
+
+    if (!user || user.password !== md5(loginUserDto.password)) {
+      throw new HttpException('用户名或密码错误', HttpStatus.BAD_REQUEST);
+    }
+
+    return {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      createTime: user.createTime,
+    };
   }
 }

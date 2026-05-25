@@ -9,7 +9,7 @@
       "request": "launch",
       "name": "debug nest",
       "runtimeExecutable": "npm",
-      "args": ["run", "start:dev"],
+      "args": ["run", "start:dev", "user"],
       "skipFiles": ["<node_internals>/**"],
       "console": "integratedTerminal"
     }
