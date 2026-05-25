@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Inject, Post, Query, SetMetadata } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Inject, Post, Query, SetMetadata } from '@nestjs/common';
 import { UserService } from './user.service';
 import { RedisService } from '@app/redis';
 import { Prisma } from '@app/prisma/generated/prisma/client';
@@ -64,11 +64,13 @@ export class UserController {
   }
 
   @Post('register')
+  @HttpCode(HttpStatus.OK)
   async register(@Body() registerUserDto: RegisterUserDto) {
     return this.userService.register(registerUserDto);
   }
 
   @Post('login')
+  @HttpCode(HttpStatus.OK)
   async login(@Body() loginUserDto: LoginUserDto) {
     console.log('Login attempt:', loginUserDto);
     const user = await this.userService.login(loginUserDto);

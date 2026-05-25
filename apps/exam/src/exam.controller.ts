@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Inject, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Inject, Param, Post, Query } from '@nestjs/common';
 import { ExamService } from './exam.service';
 import { MessagePattern } from '@nestjs/microservices';
 import { RedisService } from '@app/redis';
@@ -26,6 +26,7 @@ export class ExamController {
 
   @RequireLogin()
   @Post('add')
+  @HttpCode(HttpStatus.OK)
   async add(@Body() addExamDto: AddExamDto, @UserInfo('userId') userId: number) {
     console.log(addExamDto);
     console.log('userId', userId);
@@ -46,6 +47,7 @@ export class ExamController {
 
   @RequireLogin()
   @Post('save')
+  @HttpCode(HttpStatus.OK)
   async save(@Body() saveExamDto: SaveExamDto) {
     return this.examService.save(saveExamDto);
   }

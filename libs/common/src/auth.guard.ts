@@ -3,6 +3,7 @@ import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { Request, Response } from 'express';
 import { Observable } from 'rxjs';
+import { UnLoginException } from './unlogin.filter';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -30,12 +31,12 @@ export class AuthGuard implements CanActivate {
 
     const authHeader = request.headers.authorization;
     if (!authHeader) {
-      throw new UnauthorizedException('用户未登录');
+      throw new UnLoginException('用户未登录');
     }
 
     const token = authHeader.split(' ')[1];
     if (!token) {
-      throw new UnauthorizedException('用户未登录');
+      throw new UnLoginException('用户未登录');
     }
 
     try {
