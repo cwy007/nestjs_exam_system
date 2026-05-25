@@ -20,4 +20,20 @@ model User {
   email      String   @db.VarChar(50)
   createTime DateTime @default(now())
   updateTime DateTime @updatedAt
+
+  exams Exam[]
+}
+
+// 1:m 关系，User表是Exam表的父表，Exam表是User表的子表
+model Exam {
+  id          Int      @id @default(autoincrement())
+  name        String   @db.VarChar(50)
+  isPublished Boolean  @default(false)
+  isDeleted   Boolean  @default(false)
+  content     String   @db.Text
+  createTime  DateTime @default(now())
+  updateTime  DateTime @updatedAt
+
+  createUserId Int
+  createUser   User @relation(fields: [createUserId], references: [id])
 }

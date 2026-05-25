@@ -4,21 +4,14 @@ import { UserService } from './user.service';
 import { RedisModule } from '@app/redis';
 import { PrismaModule } from '@app/prisma';
 import { EmailModule } from '@app/email';
-import { JwtModule } from '@nestjs/jwt';
-import { AuthGuard } from '@app/common';
+import { AuthGuard, CommonModule } from '@app/common';
 
 @Module({
   imports: [
     RedisModule,
     PrismaModule,
     EmailModule,
-    JwtModule.registerAsync({
-      global: true,
-      useFactory: () => ({
-        secret: 'your_jwt_secret_key',
-        signOptions: { expiresIn: '1h' },
-      }),
-    })
+    CommonModule,
   ],
   controllers: [UserController],
   providers: [
