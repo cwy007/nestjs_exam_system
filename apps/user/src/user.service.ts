@@ -5,6 +5,7 @@ import { HttpException, HttpStatus, Inject, Injectable, Logger } from '@nestjs/c
 import { RegisterUserDto } from './dto/register-user.dto';
 import { md5 } from './utils';
 import { LoginUserDto } from './dto/login-user.dto';
+import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
 
 @Injectable()
 export class UserService {
@@ -72,6 +73,8 @@ export class UserService {
       },
     });
 
+    console.log('md5 password:', md5(loginUserDto.password));
+
     if (!user || user.password !== md5(loginUserDto.password)) {
       throw new HttpException('用户名或密码错误', HttpStatus.BAD_REQUEST);
     }
@@ -82,5 +85,33 @@ export class UserService {
       email: user.email,
       createTime: user.createTime,
     };
+  }
+
+  async updatePassword(updateUserPasswordDto: UpdateUserPasswordDto) {
+    const { email, username, password, captcha } = updateUserPasswordDto;
+    const storedCaptcha = await this.redisService.get(`update_password_captcha_${email}`);
+
+    if (!storedCaptcha) {
+      throw new HttpException('验证码已过期', HttpStatus.BAD_REQUEST);
+    }
+
+    if (storedCaptcha !== captcha) {
+      throw new HttpException('验证码错误', HttpStatus.BAD_REQUEST);
+    }
+
+    const user = await this.prismaService.user.findUnique({
+      where: { username },
+    });
+
+    if (!user || user.username !== username) {
+      throw new HttpException('用户不存在', HttpStatus.BAD_REQUEST);
+    }
+
+    await this.prismaService.user.update({
+      where: { username },
+      data: { password: md5(password) },
+    });
+
+    return { message: '密码更新成功' };
   }
 }
