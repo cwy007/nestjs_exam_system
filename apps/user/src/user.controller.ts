@@ -101,6 +101,7 @@ export class UserController {
   }
 
   @Post('update-password')
+  @HttpCode(HttpStatus.OK)
   async updatePassword(@Body() updateUserPasswordDto: UpdateUserPasswordDto) {
     return this.userService.updatePassword(updateUserPasswordDto);
   }

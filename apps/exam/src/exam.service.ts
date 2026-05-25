@@ -23,13 +23,31 @@ export class ExamService {
     return exam;
   }
 
-  async list(userId: number, bin: string) {
-    return this.prismaService.exam.findMany({
-      where: {
-        isDeleted: bin !== undefined,
-        createUserId: userId,
-      },
-    });
+  async list(userId: number, bin: string, page: number, pageSize: number) {
+    const [list, total] = await Promise.all([
+      this.prismaService.exam.findMany({
+        where: {
+          isDeleted: bin !== undefined,
+          createUserId: userId,
+        },
+        orderBy: {
+          id: 'desc',
+        },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+      this.prismaService.exam.count({
+        where: {
+          isDeleted: bin !== undefined,
+          createUserId: userId,
+        },
+      })
+    ]);
+
+    return {
+      list,
+      total,
+    };
   }
 
   async delete(userId: number, id: number) {
@@ -62,6 +80,25 @@ export class ExamService {
       },
       data: {
         isPublished: true,
+      },
+    });
+  }
+
+  async unpublish(id: number) {
+    return this.prismaService.exam.update({
+      where: {
+        id,
+      },
+      data: {
+        isPublished: false,
+      },
+    });
+  }
+
+  async getExam(id: number) {
+    return this.prismaService.exam.findUnique({
+      where: {
+        id,
       },
     });
   }

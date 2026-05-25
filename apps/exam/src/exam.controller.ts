@@ -1,10 +1,11 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Inject, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, DefaultValuePipe, Delete, Get, HttpCode, HttpStatus, Inject, Param, Post, Query } from '@nestjs/common';
 import { ExamService } from './exam.service';
 import { MessagePattern } from '@nestjs/microservices';
 import { RedisService } from '@app/redis';
 import { AddExamDto } from './dto/add-exam.dto';
 import { RequireLogin, UserInfo } from '@app/common';
 import { SaveExamDto } from './dto/save-exam.dto';
+import { generateParseIntPipe } from '@app/common/common.pipe';
 
 @Controller('exam')
 export class ExamController {
@@ -35,8 +36,15 @@ export class ExamController {
 
   @RequireLogin()
   @Get('list')
-  async list(@UserInfo('userId') userId: number, @Query('bin') bin: string) {
-    return this.examService.list(userId, bin);
+  async list(
+    @UserInfo('userId') userId: number,
+    @Query('bin') bin: string,
+    @Query('page', new DefaultValuePipe(1), generateParseIntPipe('page'))
+    page: number,
+    @Query('pageSize', new DefaultValuePipe(10), generateParseIntPipe('pageSize'))
+    pageSize: number,
+  ) {
+    return this.examService.list(userId, bin, page, pageSize);
   }
 
   @RequireLogin()
@@ -56,5 +64,17 @@ export class ExamController {
   @Get('publish/:id')
   async publish(@Param('id') id: number) {
     return this.examService.publish(id);
+  }
+
+  @RequireLogin()
+  @Get('unpublish/:id')
+  async unpublish(@Param('id') id: number) {
+    return this.examService.unpublish(id);
+  }
+
+  @RequireLogin()
+  @Get(':id')
+  async getExam(@Param('id') id: number) {
+    return this.examService.getExam(id);
   }
 }
