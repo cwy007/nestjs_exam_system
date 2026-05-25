@@ -21,7 +21,8 @@ model User {
   createTime DateTime @default(now())
   updateTime DateTime @updatedAt
 
-  exams Exam[]
+  exams   Exam[]
+  answers Answer[]
 }
 
 // 1:m 关系，User表是Exam表的父表，Exam表是User表的子表
@@ -36,4 +37,20 @@ model Exam {
 
   createUserId Int
   createUser   User @relation(fields: [createUserId], references: [id])
+
+  answers Answer[]
+}
+
+model Answer {
+  id         Int      @id @default(autoincrement())
+  content    String   @db.Text
+  score      Int
+  createTime DateTime @default(now())
+  updateTime DateTime @updatedAt
+
+  answererId Int
+  answerer   User @relation(fields: [answererId], references: [id])
+
+  examId Int
+  exam   Exam @relation(fields: [examId], references: [id])
 }

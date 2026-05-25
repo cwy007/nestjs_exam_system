@@ -4,6 +4,7 @@ import {
   Injectable,
   Logger,
   NestInterceptor,
+  StreamableFile,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { Observable, tap } from 'rxjs';
@@ -28,6 +29,12 @@ export class InvokeRecordInterceptor implements NestInterceptor {
 
     return next.handle().pipe(
       tap((res) => {
+        if (res instanceof Buffer || res instanceof StreamableFile) {
+          this.logger.debug(
+            `${method} ${path} ${ip} ${userAgent}: ${response.statusCode} ${Date.now() - now}ms (binary response, not logged)`,
+          );
+          return;
+        }
         this.logger.debug(
           `${method} ${path} ${ip} ${userAgent}: ${response.statusCode} ${Date.now() - now}ms`,
         );

@@ -6,3 +6,4 @@ export * from './custom-exception.filter';
 export * from './unlogin.filter';
 export * from './format-response.interceptor';
 export * from './invoke-record.interceptor';
+export * from './common.pipe';

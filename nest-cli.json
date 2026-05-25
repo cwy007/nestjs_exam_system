@@ -55,6 +55,15 @@
         "tsConfigPath": "apps/exam/tsconfig.app.json"
       }
     },
+    "excel": {
+      "type": "library",
+      "root": "libs/excel",
+      "entryFile": "index",
+      "sourceRoot": "libs/excel/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/excel/tsconfig.lib.json"
+      }
+    },
     "nestjs_exam_system": {
       "type": "application",
       "root": "apps/nestjs_exam_system",

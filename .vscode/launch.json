@@ -6,7 +6,7 @@
       "request": "launch",
       "name": "debug nest (user)",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "start:debug", "--", "exam"],
+      "runtimeArgs": ["run", "start:debug", "--", "answer"],
       "console": "integratedTerminal",
       "autoAttachChildProcesses": true,
       "restart": true,
