@@ -17,10 +17,42 @@ export class AnswerService {
   }
 
   async add(addAnswerDto: AddAnswerDto, userId: number) {
+    const exam = await this.prismaService.exam.findUnique({
+      where: {
+        id: addAnswerDto.examId,
+      },
+    });
+    const questions = exam?.content ? JSON.parse(exam.content) : [];
+    const answers = addAnswerDto.content ? JSON.parse(addAnswerDto.content) : [];
+
+    // 把用户答案按题目 id 建索引，避免顺序不一致导致匹配错误
+    const answerMap = new Map<string, any>(
+      answers.map((a: { id: string; answer: any }) => [a.id, a.answer]),
+    );
+
+    const isAnswerEqual = (correct: any, user: any) => {
+      if (Array.isArray(correct)) {
+        if (!Array.isArray(user)) return false;
+        if (correct.length !== user.length) return false;
+        const sortedCorrect = [...correct].map(String).sort();
+        const sortedUser = [...user].map(String).sort();
+        return sortedCorrect.every((v, i) => v === sortedUser[i]);
+      }
+      return correct === user;
+    };
+
+    let score = 0;
+    for (const q of questions) {
+      const userAnswer = answerMap.get(q.id);
+      if (userAnswer === undefined) continue;
+      if (isAnswerEqual(q.answer, userAnswer)) {
+        score += Number(q.score) || 0;
+      }
+    }
     return this.prismaService.answer.create({
       data: {
         content: addAnswerDto.content,
-        score: 0,
+        score: score,
         answerer: {
           connect: {
             id: userId,
